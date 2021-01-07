@@ -1,0 +1,174 @@
+#code Update...08/06/2020 1:40am GMT+5
+
+
+Flag = 1
+Parser = []
+Stack = ['0']
+Rules = ['+','*','(',')','id','$','E','T','F'] # a=0 | b=1 | $=2 | A=3 | B=4
+S_R = ['S4','S5','S6','S7','S11','R1','R2','R3','R4','R5','R6']
+Product=['E+T','T','T*F','F','(F)','num']
+Replace = ['E','E','T','T','F','F']
+Parser_Table = [['Error','Error','S4','Error','S5','Error','1','2','3'],['S6','Error','Error','Error','Error','Accept','Error','Error','Error'],['R2','S7','Error','R2','Error','R2','Error','Error','Error'],['R4','R4','Error','R4','Error','R4','Error','Error','Error'],['Error','Error','S4','Error','S5','Error','8','2','3'],['R6','R6','Error','R6','Error','R6','Error','Error','Error'],['Error','Error','S4','Error','S5','Error','Error','9','3'],['Error','Error','S4','Error','S5','Error','Error','Error','10'],['S6','Error','Error','S11','Error','Error','Error','Error','Error'],['R1','S7','Error','R1','Error','R1','Error','Error','Error'],['R3','R3','Error','R3','Error','R3','Error','Error','Error'],['R5','R5','Error','R5','Error','R5','Error','Error','Error']]
+print(" SLR-1 Parser Table")
+print("___________________________________________________________")
+for x in range(0, len(Parser_Table),1):
+    index = 0
+    print(Parser_Table[x][index]," ",Parser_Table[x][index+1]," ",Parser_Table[x][index+2]," ",Parser_Table[x][index+3]," ",Parser_Table[x][index+4],Parser_Table[x][index+5]," ",Parser_Table[x][index+6]," ",Parser_Table[x][index+7]," ",Parser_Table[x][index+8])
+
+
+
+global p, pop, post, temp, i, a, row
+temp = 0
+
+#print('length of text: ',len(text))
+#print(len(Rules))
+
+
+
+
+def Reduce(msg, Product, a):
+
+    global p, pop, post, temp,i,row
+
+    if Parser[a] == Rules[i]:
+            temp = Stack[len(Stack)-1]
+            post = int(temp)
+            print('Start new stack is: ',post)
+            print('new SR is: ',Parser_Table[post][i])
+            
+            for j in range(0,len(S_R),1):
+                if Parser_Table[post][i] == S_R[j]:
+                    print('Condition is Match is: ',S_R[j])
+                    msg = S_R[j]
+                    if msg[0] == 'S':
+                        Stack.append(Parser[a])
+                        Stack.append(msg[1])
+                        print('Product rule secound value is: ',msg[1])
+                        print(Stack)
+                        if Flag == '1':
+                            i=i+1
+                   
+                    elif msg[0] == 'R':
+   
+                        print(Stack)
+                        temp = Stack[len(Stack)-1]
+                        post = int(temp)           
+                        p = int(msg[1])
+                        print('Product rule secound value is: ',p)
+                        pop = len(Product[p-1])*2
+                        print('pop values: ',pop)
+                        for k in range(0,pop,1):
+                            Stack.pop()
+                        Stack.append(Replace[p-1])
+                        ss = Replace[p-1]
+                        row = int(Stack[len(Stack)-2])
+                        for i in range(0,len(Rules),1):
+                            if ss == Rules[i]:
+                                print('new stack is: ',post)
+                                print('last value of Stack is: ',Stack)
+                                print('new SR is After Reduce: ',Parser_Table[row][i])
+                                Stack.append(Parser_Table[row][i])
+                                print(Stack)
+                        if Stack[len(Stack)-2] == 'S':
+                            print(Stack)
+                        else:
+                            Reduce(msg,Product,a)
+def indentifer (msg, ind):
+    string = msg
+    start = ind
+    temp = []
+    global Parser
+    global postion
+    for i in range (start, len(string),1):
+        if string[i] == '+' or string[i] == '*' or string[i] == '$':
+            #print("This Is Indentifer")
+            postion = i
+            Parser.append('id')
+            break
+        elif i == len(string)-1:
+            #print("This Is Indentifer")
+            postion = i+1
+            Parser.append('id')
+            break
+                            
+if __name__=='__main__':
+    f = open('input.txt','r')
+    exp = f.readline()
+    stop = len(exp)
+    postion=0
+    while postion <= stop-1:
+    
+        if exp[postion] >= 'a' and exp[postion] <= 'z':
+            indentifer(exp, postion)
+            #print("new position is: ",postion)
+        elif exp[postion] == '+' or  exp[postion] == '*' or  exp[postion] == '$':
+            #print (exp[postion], "This is oprtator")
+            Parser.append(exp[postion])
+            postion=postion+1
+    print("")
+    print("File data is: ",Parser)
+
+
+
+        
+a=0
+check = 2
+stop=len(Parser)
+print('while loop is going to stop on: ',stop)
+while a < stop:
+    print('--------------------------------')
+    print('your a is: ',a, ' and input is ',Parser[a])
+    
+    for i in range(0,len(Rules),1):
+        
+        if Parser[a] == Rules[i]:
+            
+            temp = Stack[len(Stack)-1]
+            post = int(temp)
+            print('Start new stack is: ',post)
+            print('new SR is: ',Parser_Table[post][i])
+
+            if Parser_Table[post][i] == 'Accept':
+                Stack.append(Parser_Table[post][i])
+                print(Stack)
+                a=a+1
+                break
+            if Parser_Table[post][i] == 'Error':
+                print("Soory! Invalid Input Grammar not pass it")
+                a=a+1
+                break
+            else:
+                for j in range(0,len(S_R),1):
+                    if Parser_Table[post][i] == S_R[j]:
+                        print('Condition is Match is: ',S_R[j])
+                        msg = S_R[j]
+            #------------------------------------------------------------             
+                        if msg[0] == 'S':
+                            Stack.append(text[a])
+                            Stack.append(msg[1])
+                            print('Product rule secound value is: ',msg[1])
+                            print(Stack)
+                            if Flag == 1:
+                                a=a+1
+            #------------------------------------------------------------
+                        elif msg[0] == 'R':
+                            Flag =0
+                            Reduce(msg,Product,a)
+            #------------------------------------------------------------
+                        else:
+                            print("Error")
+                        
+        if Stack[len(Stack)-check] == 'S':
+            a=a+1
+            check=check+1
+            #print("check is update: ",check)
+            break
+    
+
+
+                    
+
+##    if text[a] != Rules[i]:
+##      print("Soory! Invalid Input Grammar not pass it")
+##      a=a+1
+##      break
